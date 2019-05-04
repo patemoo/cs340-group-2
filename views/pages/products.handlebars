@@ -1,0 +1,11 @@
+<h1>Products</h1>
+
+<ul>
+    {{#each products}}
+    <li>
+        <span>{{this.name}}</span>
+        <a href="/products/{{this.id}}">view</a>
+        <button>Add to cart</button>
+    </li>
+    {{/each}}
+</ul>
