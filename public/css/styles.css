@@ -51,7 +51,8 @@ header ul li {
     line-height: 40px;
 }
 header ul li a {
-    color: #ccc;
+    color: #999;
+    font-weight: 200;
     text-decoration: none;
 }
 
@@ -134,8 +135,7 @@ form fieldset textarea {
     font-size: 14px;
     padding: 4px 8px;
 }
-form button {
-    width: 20%;
+form button, form a {
     margin-top: 16px;
 }
 

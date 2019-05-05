@@ -101,9 +101,13 @@ app.post('/products/:productId/reviews', (req,res,next) => {
 });
 
 app.post('/products/:productId/update', (req,res,next) => {
-
-
   res.redirect('/products/' + req.params.productId);
+});
+
+app.get('/products/:productId/delete', (req,res,next) => {
+  sampleData.products.splice(req.params.productId, 1);
+  sampleData.nextIndex -= 1;
+  res.redirect('/products');
 });
 
 app.get('/cart', (req,res,next) => {
