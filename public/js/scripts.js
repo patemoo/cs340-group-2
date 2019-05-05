@@ -1,13 +1,19 @@
 var reviews = {
     onWriteClick: (event) => {
-        let editor = event.target.parentNode.querySelector('#review-editor');
+        let parent = event.target.parentNode;
+        let editor = parent.querySelector('#review-editor');
+        let other = parent.querySelector('#product-editor');
+        other.classList.remove('showEditor');
         editor.classList.toggle('showEditor');
     },
 }
 
 var product = {
     onEditClick: (event) => {
-        let editor = event.target.parentNode.querySelector('#product-editor');
+        let parent = event.target.parentNode;
+        let editor = parent.querySelector('#product-editor');
+        let other = parent.querySelector('#review-editor');
+        other.classList.remove('showEditor');
         editor.classList.toggle('showEditor');
     }
 }
