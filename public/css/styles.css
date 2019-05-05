@@ -6,7 +6,8 @@ html, body {
 body {
     display: flex;
     flex-direction: column;
-    font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    color: #333;
 }
 
 header {
@@ -21,6 +22,11 @@ header .branding {
     flex: 0 0 auto;
     height: 80px;
     line-height: 80px;
+}
+header .branding a {
+    color: #333;
+    text-decoration: none;
+    cursor: pointer;
 }
 header nav {
     flex: 1 1 auto;
@@ -38,6 +44,7 @@ header ul li {
 }
 header ul li a {
     color: #ccc;
+    text-decoration: none;
 }
 
 main {
@@ -49,6 +56,26 @@ main article {
     width: 100%;
     max-width: 720px;
     margin: 0 auto;
+}
+main button, main a {
+    display: inline-block;
+    min-width: 120px;
+    height: 32px;
+    margin-bottom: 8px;
+    padding: 0 8px;
+    background-color: #fff;
+    color: #333;
+    border: none;
+    vertical-align: top;
+    text-align: center;
+    line-height: 32px;
+    font-size: 14px;
+    font-weight: 300;
+    text-decoration: none;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+main button:hover, main a:hover {
+    box-shadow: 1px 1px 3px 0 #ccc;
 }
 
 footer {
@@ -70,20 +97,57 @@ footer ul li {
 }
 footer ul li a {
     color: #ccc;
+    text-decoration: none;
+    font-size: 13px;
 }
 
 /* form styles */
+form {
+    margin-bottom: 40px;
+}
+
 form fieldset {
     border: none;
     margin: 0;
     padding: 0;
 }
-
+form fieldset label {
+    font-size: 13px;
+}
 form fieldset input {
     width: 100%;
-    margin-bottom: 20px;
-}
+    height: 32px;
+    margin: 4px 0 20px;
+    padding: 0 8px;
+    font-size: 14px;
 
+}
 form button {
     width: 20%;
+    margin-top: 16px;
+}
+
+/* product list styles */
+ul.products-list {
+    margin: 0;
+    padding: 0;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    grid-gap: 8px 8px;
+}
+ul.products-list li {
+    list-style: none;
+    display: inline-block;
+
+}
+ul.products-list li h2 {
+    font-size: 14px;
+    margin: 0;
+}
+ul.products-list li p {
+    margin: 0;
+}
+ul.products-list li a, ul.products-list li button {
+    display: inline-block;
+    margin-top: 20px;
 }

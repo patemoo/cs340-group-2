@@ -5,7 +5,7 @@ var sampleData = {
   products: [
     {
       id: 0,
-      sku: 'sku number',
+      sku: '#####',
       price: '000.00',
       name: 'Product One',
       description: 'description text goes here.',
@@ -15,7 +15,7 @@ var sampleData = {
     },
     {
       id: 1,
-      sku: 'sku number',
+      sku: '#####',
       price: '000.00',
       name: 'Product Two',
       description: 'description text goes here.',
@@ -25,7 +25,7 @@ var sampleData = {
     },
     {
       id: 2,
-      sku: 'sku number',
+      sku: '#####',
       price: '000.00',
       name: 'Product Three',
       description: 'description text goes here.',
@@ -49,18 +49,12 @@ app.get('/', (req,res,next) => {
   res.render('home', context);
 });
 
-// products
 app.get('/products', (req,res,next) => {
   // todo: get products from db
   let context = {
     products: sampleData.products,
   }
-
   res.render('pages/products', context);
-});
-
-app.get('/products/add', (req,res,next) => {
-  res.render('pages/product-add');
 });
 
 app.get('/products/:productId', (req,res,next) => {
@@ -71,6 +65,18 @@ app.get('/products/:productId', (req,res,next) => {
   context.product = sampleData.products[params.productId];
   
   res.render('pages/product', context);
+});
+
+app.get('/product/new', (req,res,next) => {
+  res.render('pages/product-new');
+});
+
+app.post('/product/new', (req,res,next) => {
+  let product = req.body;
+  // add new product to products table
+  console.log(product);
+
+  res.redirect('/products');
 });
 
 app.get('/cart', (req,res,next) => {
@@ -119,12 +125,17 @@ app.get('/signin', (req,res,next) => {
   }  
 });
 
+app.get('/account', (req,res,next) => {
+  res.render('pages/account');
+});
 
-// account
 app.get('/account/new', (req,res,next) => {
   res.render('pages/account-new');
 });
 
+app.post('/account/new', (req,res,next) => {
+  res.redirect('/account');
+})
 
 app.use(function(req,res){
   res.status(404);
