@@ -11,3 +11,45 @@
 </ul>
 
 <a href="/cart/{{product.id}}">Add to cart</a>
+<button onclick="reviews.onWriteClick(event)">Write review</button>
+<button onclick="product.onEditClick(event)">Edit product</button>
+
+<hr>
+
+<form method="POST" action="/products/{{product.id}}/reviews" id="review-editor" class="review-editor">
+    <h3>Leave a review:</h3>
+    <fieldset>
+        <label>Title
+            <input type="text">
+        </label>
+        <label>Comment
+            <textarea name="" id="" cols="30" rows="10"></textarea>
+        </label>
+    </fieldset>
+    <button type="submit">Submit</button>
+</form>
+
+<form method="POST" action="/products/{{product.id}}/update" id="product-editor" class="product-editor">
+    <h3>Edit product:</h3>
+    <fieldset>
+        <label>Price
+            <input type="text" name="price" value="{{product.price}}">
+        </label>
+        <label>Name
+            <input type="text" name="name" value="{{product.name}}">
+        </label>
+        <label>Description
+            <input type="text" name="description" value="{{product.description}}">
+        </label>
+        <label>Brand
+            <input type="text" name="brand" value="{{product.brand}}">
+        </label>
+        <label>Model
+            <input type="text" name="model" value="{{product.model}}">
+        </label>
+        <label>Qty in stock
+            <input type="number" name="stock" value="{{product.stock}}">
+        </label>
+    </fieldset>
+    <button type="submit">Submit</button>
+</form>

@@ -1,3 +1,4 @@
+var bodyParser = require('body-parser');
 var express = require('express');
 // var mysql = require('./dbcon.js');
 
@@ -33,7 +34,8 @@ var sampleData = {
       model: 'model',
       stock: 10,
     }
-  ]
+  ],
+  nextIndex: 3,
 }
 
 var app = express();
@@ -44,17 +46,42 @@ app.set('view engine', 'handlebars');
 app.set('port', process.argv[2]);
 app.use(express.static('public'));
 
+app.use(bodyParser.json({ type: 'application/*+json' }))
+
 app.get('/', (req,res,next) => {
   let context = {};
   res.render('home', context);
 });
 
 app.get('/products', (req,res,next) => {
-  // todo: get products from db
+  // todo: select all products from db
   let context = {
     products: sampleData.products,
   }
   res.render('pages/products', context);
+});
+
+app.get('/products/new', (req,res,next) => {
+  res.render('pages/product-new');
+});
+
+app.post('/products/new', (req,res,next) => {
+  let product = {
+    id: sampleData.nextIndex,
+    price: req.body.price,
+    name: req.body.name,
+    description: req.body.description,
+    brand: req.body.brand,
+    model: req.body.model,
+    stock: req.body.stock,
+  }
+  sampleData.products.push(product);
+  sampleData.nextIndex += 1;
+  console.log(product);
+
+  // todo: add new product to products table in db
+
+  res.redirect('/products');
 });
 
 app.get('/products/:productId', (req,res,next) => {
@@ -67,16 +94,16 @@ app.get('/products/:productId', (req,res,next) => {
   res.render('pages/product', context);
 });
 
-app.get('/product/new', (req,res,next) => {
-  res.render('pages/product-new');
+app.post('/products/:productId/reviews', (req,res,next) => {
+
+
+  res.redirect('/products/' + req.params.productId);
 });
 
-app.post('/product/new', (req,res,next) => {
-  let product = req.body;
-  // add new product to products table
-  console.log(product);
+app.post('/products/:productId/update', (req,res,next) => {
 
-  res.redirect('/products');
+
+  res.redirect('/products/' + req.params.productId);
 });
 
 app.get('/cart', (req,res,next) => {

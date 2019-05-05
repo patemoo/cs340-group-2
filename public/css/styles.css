@@ -10,6 +10,14 @@ body {
     color: #333;
 }
 
+* {
+    box-sizing: border-box;
+}
+
+.hidden {
+    display: none;
+}
+
 header {
     flex: 0 0 auto;
     display: flex;
@@ -120,7 +128,11 @@ form fieldset input {
     margin: 4px 0 20px;
     padding: 0 8px;
     font-size: 14px;
-
+}
+form fieldset textarea {
+    width: 100%;
+    font-size: 14px;
+    padding: 4px 8px;
 }
 form button {
     width: 20%;
@@ -150,4 +162,12 @@ ul.products-list li p {
 ul.products-list li a, ul.products-list li button {
     display: inline-block;
     margin-top: 20px;
+}
+
+/* review styles */
+.review-editor, .product-editor {
+    display: none;
+}
+.review-editor.showEditor, .product-editor.showEditor {
+    display: block;
 }
