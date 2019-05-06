@@ -144,12 +144,13 @@ ul.products-list {
     margin: 0;
     padding: 0;
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
     grid-gap: 8px 8px;
 }
 ul.products-list li {
     list-style: none;
     display: inline-block;
+    margin-bottom: 20px;
 
 }
 ul.products-list li h2 {

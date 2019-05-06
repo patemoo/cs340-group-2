@@ -35,7 +35,7 @@ var sampleData = {
       stock: 10,
     }
   ],
-  nextIndex: 3,
+  count: 3,
 }
 
 var app = express();
@@ -67,7 +67,7 @@ app.get('/products/new', (req,res,next) => {
 
 app.post('/products/new', (req,res,next) => {
   let product = {
-    id: sampleData.nextIndex,
+    id: sampleData.count,
     price: req.body.price,
     name: req.body.name,
     description: req.body.description,
@@ -75,8 +75,9 @@ app.post('/products/new', (req,res,next) => {
     model: req.body.model,
     stock: req.body.stock,
   }
+  // use sample data until connected to db
   sampleData.products.push(product);
-  sampleData.nextIndex += 1;
+  sampleData.count++;
   console.log(product);
 
   // todo: add new product to products table in db
@@ -89,30 +90,34 @@ app.get('/products/:productId', (req,res,next) => {
   let context = {};
   // todo: get product info from id param
 
+  // use sample data until connected to db
   context.product = sampleData.products[params.productId];
   
   res.render('pages/product', context);
 });
 
 app.post('/products/:productId/reviews', (req,res,next) => {
-
+  // todo: add review to db
 
   res.redirect('/products/' + req.params.productId);
 });
 
 app.post('/products/:productId/update', (req,res,next) => {
+  // todo: update product in db
   res.redirect('/products/' + req.params.productId);
 });
 
 app.get('/products/:productId/delete', (req,res,next) => {
+  // todo: delete product from db
   sampleData.products.splice(req.params.productId, 1);
-  sampleData.nextIndex -= 1;
+  sampleData.count--;
   res.redirect('/products');
 });
 
 app.get('/cart', (req,res,next) => {
   let context = {};
   // todo: make db call to get cart line items
+  // should return all line items for customer that do not have a order id
   let lineitems = []
   context.lineitems = lineitems;
 
@@ -144,6 +149,7 @@ app.get('/signin', (req,res,next) => {
   let accountId = req.query && req.query.account_id;
 
   if (accountId) {
+    // todo: check db for account
     let account = {
       id: accountId,
       fname: 'John',
@@ -151,6 +157,10 @@ app.get('/signin', (req,res,next) => {
     }
     context.account = account;
     res.render('pages/account', context);
+
+    // todo: if account doesn't exist redirect to create new account
+    res.redirect('/account/new');
+    
   } else {
     res.render('pages/signin');
   }  
