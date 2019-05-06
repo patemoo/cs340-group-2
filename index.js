@@ -67,7 +67,7 @@ app.get('/products/new', (req,res,next) => {
 
 app.post('/products/new', (req,res,next) => {
   let product = {
-    id: sampleData.count,
+    id: sampleData.nextIndex,
     price: req.body.price,
     name: req.body.name,
     description: req.body.description,
@@ -108,7 +108,7 @@ app.post('/products/:productId/update', (req,res,next) => {
 
 app.get('/products/:productId/delete', (req,res,next) => {
   // todo: delete product from db
-  sampleData.products.splice(req.params.productId, 1);
+  
   res.redirect('/products');
 });
 
