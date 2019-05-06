@@ -35,7 +35,7 @@ var sampleData = {
       stock: 10,
     }
   ],
-  count: 3,
+  nextIndex: 3,
 }
 
 var app = express();
@@ -77,8 +77,7 @@ app.post('/products/new', (req,res,next) => {
   }
   // use sample data until connected to db
   sampleData.products.push(product);
-  sampleData.count++;
-  console.log(product);
+  sampleData.nextIndex += 1;
 
   // todo: add new product to products table in db
 
@@ -110,7 +109,6 @@ app.post('/products/:productId/update', (req,res,next) => {
 app.get('/products/:productId/delete', (req,res,next) => {
   // todo: delete product from db
   sampleData.products.splice(req.params.productId, 1);
-  sampleData.count--;
   res.redirect('/products');
 });
 
