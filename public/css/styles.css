@@ -165,10 +165,12 @@ ul.products-list li a, ul.products-list li button {
     margin-top: 20px;
 }
 
-/* review styles */
-.review-editor, .product-editor {
+/* editor styles */
+.review-editor, .product-editor, .customer-editor {
     display: none;
 }
-.review-editor.showEditor, .product-editor.showEditor {
+.review-editor.showEditor, .product-editor.showEditor, .customer-editor.showEditor {
     display: block;
 }
+
+

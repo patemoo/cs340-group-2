@@ -4,10 +4,9 @@
     <li>{{product.sku}}</li>
     <li>{{product.price}}</li>
     <li>{{product.description}}</li>
-    <li>{{product.brand}}</li>
-    <li>{{product.model}}</li>
-    <li>in stock: {{product.stock}}</li>
-
+    <li>{{product.brandName}}</li>
+    <li>{{product.modelName}}</li>
+    <li>in stock: {{product.inStock}}</li>
 </ul>
 
 <a href="/cart/{{product.id}}">Add to cart</a>
@@ -21,11 +20,16 @@
     <h3>Leave a review:</h3>
     <fieldset>
         <label>Title
-            <input type="text">
+            <input type="text" name="title">
+        </label>
+        <label>Rating
+            <input type="text" name="rating">
         </label>
         <label>Comment
             <textarea name="" id="" cols="30" rows="10"></textarea>
         </label>
+        <input hidden type="" name="pid" value="{{product.id}}">
+        <input hidden type="" name="cid" value="{{customer.id}}">
     </fieldset>
     <button type="submit">Submit</button>
 </form>
@@ -43,13 +47,13 @@
             <input type="text" name="description" value="{{product.description}}">
         </label>
         <label>Brand
-            <input type="text" name="brand" value="{{product.brand}}">
+            <input type="text" name="brandName" value="{{product.brandName}}">
         </label>
         <label>Model
-            <input type="text" name="model" value="{{product.model}}">
+            <input type="text" name="modelName" value="{{product.modelName}}">
         </label>
         <label>Qty in stock
-            <input type="number" name="stock" value="{{product.stock}}">
+            <input type="number" name="inStock" value="{{product.inStock}}">
         </label>
     </fieldset>
     <button type="submit">Submit</button>

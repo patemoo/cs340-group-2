@@ -1,5 +1,14 @@
 <h1>Products</h1>
 
+<form method="GET" action="/products">
+    <fieldset>
+        <label>Search
+            <input type="text" name="search">
+        </label>
+    </fieldset>
+    <button type="submit">Search</button>
+</form>
+
 <ul class="products-list">
     {{#each products}}
     <li>

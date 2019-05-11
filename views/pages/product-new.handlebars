@@ -1,6 +1,9 @@
 <h1>Add Product</h1>
 <form method="POST" action="/products/new">
     <fieldset>
+        <label>SKU
+            <input type="text" name="sku">
+        </label>
         <label>Price
             <input type="text" name="price">
         </label>
@@ -11,13 +14,13 @@
             <input type="text" name="description">
         </label>
         <label>Brand
-            <input type="text" name="brand">
+            <input type="text" name="brandName">
         </label>
         <label>Model
-            <input type="text" name="model">
+            <input type="text" name="modelName">
         </label>
         <label>Qty in stock
-            <input type="number" name="stock">
+            <input type="number" name="inStock">
         </label>
     </fieldset>
     <button type="submit">Add</button>

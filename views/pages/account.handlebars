@@ -1,9 +1,52 @@
-<h1>Account Info</h1>
+<h1>Customer Info</h1>
 
 <ul>
-    <li>{{account.id}}</li>
-    <li>{{account.fname}}</li>
-    <li>{{account.lname}}</li>
+    <li>{{customer.id}}</li>
+    <li>{{customer.email}}</li>
+    <li>{{customer.firstName}}</li>
+    <li>{{customer.lastName}}</li>
+    <li>{{customer.street1}}</li>
+    <li>{{customer.street2}}</li>
+    <li>{{customer.city}}</li>
+    <li>{{customer.state}}</li>
+    <li>{{customer.zip}}</li>
+    <li>{{customer.birthday}}</li>
 </ul>
 
-<button>Edit</button>
+<button onclick="customer.onEditClick(event)">Edit</button>
+
+<form method="POST" action="/account/{{customer.id}}/update" id="customer-editor" class="customer-editor">
+    <h3>Edit customer:</h3>
+    <fieldset>
+        <label>Email
+            <input type="text" name="email" value="{{customer.email}}">
+        </label>
+        <label>First name
+            <input type="text" name="firstName" value="{{customer.firstName}}">
+        </label>
+        <label>Last name
+            <input type="text" name="lastName" value="{{customer.lastName}}">
+        </label>
+        <label>Birthday
+            <input type="text" name="birthday" value="{{customer.birthday}}">
+        </label>
+
+        <label> Address line 1
+            <input type="text" name="street1" value="{{customer.street1}}">
+        </label>
+        <label> Address line 2
+            <input type="text" name="street2" value="{{customer.street2}}">
+        </label>
+        <label> City
+            <input type="text" name="city" value="{{customer.city}}">
+        </label>
+        <label> State
+            <input type="text" name="state" value="{{customer.state}}">
+        </label>
+        <label> Zipcode
+            <input type="text" name="zip" value="{{customer.zip}}">
+        </label>
+        
+        <button type="submit">Submit</button>
+    </fieldset>
+</form>

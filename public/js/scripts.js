@@ -17,3 +17,11 @@ var product = {
         editor.classList.toggle('showEditor');
     }
 }
+
+var customer = {
+    onEditClick: (event) => {
+        let parent = event.target.parentNode;
+        let editor = parent.querySelector('#customer-editor');
+        editor.classList.toggle('showEditor');
+    }
+}
