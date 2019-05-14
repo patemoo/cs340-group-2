@@ -4,7 +4,7 @@ var express = require('express');
 
 var STATES = ['AL','AK','AZ','AR','CA','CO','CT','DE','FL','GA','HI','ID','IL','IN','IA','KS','KY','LA','ME','MD','MA','MI','MN','MS','MO','MT','NE','NV','NH','NJ','NM','NY','NC','ND','OH','OK','OR','PA','RI','SC','SD','TN','UT','VT','VA','WA','WV','WI','WY'];
 var date = new Date();
-var currentCustomerId; 
+var currentCustomerId = null; 
 
 var sampleData = {
   products: [
@@ -162,33 +162,133 @@ app.get('/products/:productId/delete', (req,res,next) => {
 });
 
 app.get('/cart', (req,res,next) => {
+  // if customer not set, redirect to sign-in
+  if (currentCustomerId == null) {
+    res.redirect('/signin');
+    return;
+  }
+
   let context = {};
+  context.cartItems = [];
   // todo: make db call to get cart line items
   // should return all line items for customer that do not have a order id
-  let lineitems = []
-  context.lineitems = lineitems;
+
+  let length = sampleData.lineitems.length;
+  
+  for (let i=0; i<length; i++) {
+    if (sampleData.lineitems[i].cid === currentCustomerId && sampleData.lineitems[i].oid == null) {
+      let index = sampleData.lineitems[i].pid;
+      let product = sampleData.products[index];
+      product.qty = sampleData.lineitems[i].qty;
+      context.cartItems.push(product);
+    }
+  }
 
   res.render('pages/cart', context);
 });
 
 app.get('/cart/:productId', (req,res,next) => {
+  // if customer not set, redirect to sign-in
+  if (currentCustomerId == null) {
+    res.redirect('/signin');
+    return;
+  }
+
+  let productId = Number(req.params.productId);
+  let createItem = true;
+
+  // if lineitem already exists increase qty
+  let length = sampleData.lineitems.length;
+  
+  for (let i=0; i<length; i++) {
+    if (
+      sampleData.lineitems[i].pid === productId
+      && sampleData.lineitems[i].cid === currentCustomerId
+      && sampleData.lineitems[i].oid == null
+    ) {
+      sampleData.lineitems[i].qty += 1;
+      createItem = false;
+    }
+  }
+
+
   // todo: create lineitem in db with product id and account id
+  if (createItem) {
+    let lineitem = {
+      id: sampleData.lineitems.length,
+      pid: productId,
+      cid: currentCustomerId,
+      oid: null,
+      qty: 1,
+    }
+
+    sampleData.lineitems.push(lineitem);
+  }
+
   res.redirect('/cart');
 });
 
 app.get('/checkout', (req,res,next) => {
-  // todo: create order & orderId
   // todo: get account id from storage
+  // todo: create order & orderId
+  let date = new Date();
+  let order = {
+    id: sampleData.orders.length,
+    status: 'pending',
+    timestamp: date.getTime(),
+  }
+
+  sampleData.orders.push(order);
+
+  let length = sampleData.lineitems.length;
+  
   // todo: update cart items with orderId
-  // todo: select all order line items
-  let lineitems = [];
-  let context = {
-    lineitems: lineitems,
-    orderId: '123',
+  for (let i=0; i<length; i++) {
+    if (sampleData.lineitems[i].cid === currentCustomerId && sampleData.lineitems[i].oid == null) {
+      sampleData.lineitems[i].oid = order.id;
+    }
+  }
+
+  res.redirect(`/orders/${order.id}`)
+});
+
+app.get('/orders', (req,res,next) => {
+  let context = {};
+  // we will need to query the db for all line items with  an order id 
+  // and a customer id that matches the current user 
+  // then group by order id to get a list of orders belonging to the user.
+
+  context.orders = [];
+
+  res.render('pages/orders', context);
+})
+
+app.get('/orders/:orderId', (req,res,next) => {
+  let context = {};
+  context.orderItems = [];
+  context.order = sampleData.orders[req.params.orderId];
+
+  let length = sampleData.lineitems.length;
+
+  for (let i=0; i<length; i++) {
+    if (sampleData.lineitems[i].cid === currentCustomerId && sampleData.lineitems[i].oid === Number(req.params.orderId)) {
+      let index = sampleData.lineitems[i].pid;
+      let product = sampleData.products[index];
+      product.qty = sampleData.lineitems[i].qty;
+      context.orderItems.push(product);
+    }
   }
 
   res.render('pages/order', context);
-})
+});
+
+app.get('/orders/:orderId/complete', (req,res,next) => {
+  let orderId = Number(req.params.orderId);
+
+  sampleData.orders[orderId].status = 'complete';
+
+  res.redirect(`/orders/${orderId}`);
+});
 
 
 app.get('/signin', (req,res,next) => {
@@ -246,11 +346,15 @@ app.post('/account/new', (req,res,next) => {
 
 app.get('/account/:customerId', (req,res,next) => {
   let params = req.params;
+  let customerId = params.customerId;
   let context = {};
   // todo: get customer info from id param
 
   // use sample data until connected to db
-  context.customer = sampleData.customers[params.customerId];
+  context.customer = sampleData.customers[customerId];
+
+  // set current customer:
+  currentCustomerId = Number(customerId);
 
   res.render('pages/account', context);
 });

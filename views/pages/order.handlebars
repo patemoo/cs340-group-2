@@ -1,8 +1,14 @@
-<h1>Order: {{orderId}}</h1>
+<h1>Order {{order.id}}: {{order.status}}</h1>
 
-<ul>
-    {{#each lineitems}}
-    <li>{{this.name}}</li>
+<ul class="order-list">
+    {{#each orderItems}}
+    <li>
+        <h2>{{this.name}}</h2>
+        <p>{{this.price}}</p>
+        <p>sku: {{this.sku}}</p>
+        <p>qty: {{this.qty}}</p>
+    </li>
     {{/each}}
 </ul>
 
+<a href="/orders/{{order.id}}/complete">Place order</a>
