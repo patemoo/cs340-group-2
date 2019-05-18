@@ -154,9 +154,8 @@ app.get('/products/:productId', (req,res,next) => {
 });
 
 app.post('/products/:productId/reviews', (req,res,next) => {
-  // todo: add review to db
-  // console.log(req.body);
-  // Add new product to products table in db
+
+  // Add new review to db
   // todo: add correct customer id.
   pool.query("INSERT INTO reviews (`pid`, `cid`, `rating`, `title`, `body`) VALUES (?, ? , ? , ?, ?)", 
     [req.params.productId, 5, req.body.rating, req.body.title, req.body.comment], (err, result) => {
