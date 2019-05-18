@@ -26,7 +26,7 @@
             <input type="text" name="rating">
         </label>
         <label>Comment
-            <textarea name="" id="" cols="30" rows="10"></textarea>
+            <textarea name="comment" id="" cols="30" rows="10"></textarea>
         </label>
         <input hidden type="" name="pid" value="{{product.id}}">
         <input hidden type="" name="cid" value="{{customer.id}}">
@@ -58,3 +58,11 @@
     </fieldset>
     <button type="submit">Submit</button>
 </form>
+
+{{#each reviews}}
+    <div class="review">
+        <span>{{this.title}}</span>
+        <p>rating: <span>{{this.rating}}</span><p></p>
+        <p>{{this.body}}</p>
+    </div>
+{{/each}}

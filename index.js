@@ -1,6 +1,13 @@
 var bodyParser = require('body-parser');
 var express = require('express');
-// var mysql = require('./dbcon.js');
+const mysql = require('mysql');
+
+const pool = mysql.createPool({
+  host  : 'classmysql.engr.oregonstate.edu',
+  user  : 'cs340_moorepat',
+  password: '7567',
+  database: 'cs340_moorepat'
+});
 
 var STATES = ['AL','AK','AZ','AR','CA','CO','CT','DE','FL','GA','HI','ID','IL','IN','IA','KS','KY','LA','ME','MD','MA','MI','MN','MS','MO','MT','NE','NV','NH','NJ','NM','NY','NC','ND','OH','OK','OR','PA','RI','SC','SD','TN','UT','VT','VA','WA','WV','WI','WY'];
 var date = new Date();
@@ -75,18 +82,31 @@ app.get('/', (req,res,next) => {
 });
 
 app.get('/products', (req,res,next) => {
-  // todo: select all products from db
+  let context = {};
 
-  // todo: if search query exists: select products from db
-  // filtered by search query
   if (req.query.search) {
-    console.log(req.query.search);
-  }
+    // Search query exists: select products from db
+    // filtered by search query
+    pool.query('SELECT * FROM product WHERE product.name LIKE ?',[`%${req.query.search}%`], (err, rows, fields) => {
+      if(err){
+          next(err);
+          return;
+      }
+      context.products = rows;
+      res.render('pages/products', context);
+    });
+  } else {
 
-  let context = {
-    products: sampleData.products,
+    // Select all products from db
+    pool.query('SELECT * FROM product', (err, rows, fields) => {
+      if(err){
+          next(err);
+          return;
+      }
+      context.products = rows;
+      res.render('pages/products', context);
+    });
   }
-  res.render('pages/products', context);
 });
 
 app.get('/products/new', (req,res,next) => {
@@ -94,57 +114,71 @@ app.get('/products/new', (req,res,next) => {
 });
 
 app.post('/products/new', (req,res,next) => { 
-  let product = {
-    id: sampleData.products.length,
-    sku: req.body.sku,
-    price: req.body.price,
-    name: req.body.name,
-    description: req.body.description,
-    brand: req.body.brandName,
-    model: req.body.modelName,
-    stock: req.body.inStock,
-  }
-  // use sample data until connected to db
-  sampleData.products.push(product);
-  sampleData.nextIndex += 1;
 
-  // todo: add new product to products table in db
-
-  res.redirect('/products');
+  // Add new product to products table in db
+  pool.query("INSERT INTO product (`sku`, `name`, `price`, `description`, `brandName`, `modelName`, `inStock`) VALUES (?, ? , ? , ?, ?, ? , ?)", 
+    [req.body.sku, req.body.name, req.body.price, req.body.description, req.body.brandName, req.body.modelName, req.body.inStock], (err, result) => {
+        if(err){
+            next(err);
+            return;
+        }
+        res.redirect('/products');
+  });
 });
 
 app.get('/products/:productId', (req,res,next) => {
   let params = req.params;
   let context = {};
-  // todo: get product info from id param
 
-  // use sample data until connected to db
-  context.product = sampleData.products[params.productId];
-  context.customer = {
-    id: currentCustomerId,
-  }
-  
-  res.render('pages/product', context);
+  // Query db to get product info from id param
+  pool.query('SELECT * FROM product WHERE product.id = ?',[params.productId], (err, rows, fields) => {
+    if(err){
+        next(err);
+        return;
+    }
+    context.product = rows[0];
+    context.customer = {
+      id: currentCustomerId,
+    }
+
+    pool.query('SELECT * FROM reviews WHERE reviews.pid = ?', [params.productId], (err, reviews, fields) => {
+      if(err){
+        next(err);
+        return;
+      }
+      console.log(reviews);
+      context.reviews = reviews
+      res.render('pages/product', context);
+    });
+  });  
 });
 
 app.post('/products/:productId/reviews', (req,res,next) => {
   // todo: add review to db
-  console.log(req.body);
-
-  res.redirect('/products/' + req.params.productId);
+  // console.log(req.body);
+  // Add new product to products table in db
+  // todo: add correct customer id.
+  pool.query("INSERT INTO reviews (`pid`, `cid`, `rating`, `title`, `body`) VALUES (?, ? , ? , ?, ?)", 
+    [req.params.productId, 5, req.body.rating, req.body.title, req.body.comment], (err, result) => {
+        if(err){
+            next(err);
+            return;
+        }
+        res.redirect('/products/' + req.params.productId);
+  });
 });
 
 app.post('/products/:productId/update', (req,res,next) => {
   // todo: update product in db
 
-  let product = sampleData.products[req.params.productId];
+  // let product = sampleData.products[req.params.productId];
 
-  product.price = req.body.price || product.price,
-  product.name = req.body.name || product.name,
-  product.description = req.body.description || product.description,
-  product.brandName = req.body.brandName || product.brandName,
-  product.modelName = req.body.modelName || product.modelname,
-  product.inStock = req.body.inStock || product.inStock,
+  // product.price = req.body.price || product.price,
+  // product.name = req.body.name || product.name,
+  // product.description = req.body.description || product.description,
+  // product.brandName = req.body.brandName || product.brandName,
+  // product.modelName = req.body.modelName || product.modelname,
+  // product.inStock = req.body.inStock || product.inStock,
 
   res.redirect('/products/' + req.params.productId);
 });
@@ -152,11 +186,11 @@ app.post('/products/:productId/update', (req,res,next) => {
 app.get('/products/:productId/delete', (req,res,next) => {
   // todo: delete product from db
 
-  sampleData.products.splice(req.params.productId, 1);
-  let length = sampleData.products.length;
-  for (let i=0; i < length; i++) {
-    sampleData.products[i].id= i;
-  }
+  // sampleData.products.splice(req.params.productId, 1);
+  // let length = sampleData.products.length;
+  // for (let i=0; i < length; i++) {
+  //   sampleData.products[i].id= i;
+  // }
   
   res.redirect('/products');
 });
