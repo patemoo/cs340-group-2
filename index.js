@@ -13,6 +13,9 @@ var STATES = ['AL','AK','AZ','AR','CA','CO','CT','DE','FL','GA','HI','ID','IL','
 var date = new Date();
 var currentCustomerId = null; 
 
+// todo: remove this ones login is hooked up to db
+currentCustomerId = 6;
+
 var sampleData = {
   products: [
     {
@@ -85,9 +88,9 @@ app.get('/products', (req,res,next) => {
   let context = {};
 
   if (req.query.search) {
-    // Search query exists: select products from db
+    // If search query exists: select products from db
     // filtered by search query
-    pool.query('SELECT * FROM product WHERE product.name LIKE ?',[`%${req.query.search}%`], (err, rows, fields) => {
+    pool.query('SELECT * FROM products WHERE products.name LIKE ?',[`%${req.query.search}%`], (err, rows, fields) => {
       if(err){
           next(err);
           return;
@@ -98,7 +101,7 @@ app.get('/products', (req,res,next) => {
   } else {
 
     // Select all products from db
-    pool.query('SELECT * FROM product', (err, rows, fields) => {
+    pool.query('SELECT * FROM products', (err, rows, fields) => {
       if(err){
           next(err);
           return;
@@ -115,8 +118,8 @@ app.get('/products/new', (req,res,next) => {
 
 app.post('/products/new', (req,res,next) => { 
 
-  // Add new product to products table in db
-  pool.query("INSERT INTO product (`sku`, `name`, `price`, `description`, `brandName`, `modelName`, `inStock`) VALUES (?, ? , ? , ?, ?, ? , ?)", 
+  // Add new product to products table
+  pool.query("INSERT INTO products (`sku`, `name`, `price`, `description`, `brandName`, `modelName`, `inStock`) VALUES (?, ? , ? , ?, ?, ? , ?)", 
     [req.body.sku, req.body.name, req.body.price, req.body.description, req.body.brandName, req.body.modelName, req.body.inStock], (err, result) => {
         if(err){
             next(err);
@@ -131,7 +134,7 @@ app.get('/products/:productId', (req,res,next) => {
   let context = {};
 
   // Query db to get product info from id param
-  pool.query('SELECT * FROM product WHERE product.id = ?',[params.productId], (err, rows, fields) => {
+  pool.query('SELECT * FROM products WHERE products.id = ?',[params.productId], (err, rows, fields) => {
     if(err){
         next(err);
         return;
@@ -141,13 +144,13 @@ app.get('/products/:productId', (req,res,next) => {
       id: currentCustomerId,
     }
 
+    // Query db to get reviews for the product
     pool.query('SELECT * FROM reviews WHERE reviews.pid = ?', [params.productId], (err, reviews, fields) => {
       if(err){
         next(err);
         return;
       }
-      console.log(reviews);
-      context.reviews = reviews
+      context.reviews = reviews;
       res.render('pages/product', context);
     });
   });  
@@ -158,7 +161,7 @@ app.post('/products/:productId/reviews', (req,res,next) => {
   // Add new review to db
   // todo: add correct customer id.
   pool.query("INSERT INTO reviews (`pid`, `cid`, `rating`, `title`, `body`) VALUES (?, ? , ? , ?, ?)", 
-    [req.params.productId, 5, req.body.rating, req.body.title, req.body.comment], (err, result) => {
+    [req.params.productId, currentCustomerId, req.body.rating, req.body.title, req.body.comment], (err, result) => {
         if(err){
             next(err);
             return;
@@ -202,22 +205,17 @@ app.get('/cart', (req,res,next) => {
   }
 
   let context = {};
-  context.cartItems = [];
-  // todo: make db call to get cart line items
-  // should return all line items for customer that do not have a order id
-
-  let length = sampleData.lineitems.length;
   
-  for (let i=0; i<length; i++) {
-    if (sampleData.lineitems[i].cid === currentCustomerId && sampleData.lineitems[i].oid == null) {
-      let index = sampleData.lineitems[i].pid;
-      let product = sampleData.products[index];
-      product.qty = sampleData.lineitems[i].qty;
-      context.cartItems.push(product);
+  // Make db call to get cart line items
+  // should return all line items for customer that do not have a order id
+  pool.query("SELECT * FROM lineItems li INNER JOIN products p ON p.id = li.pid WHERE li.cid = ? AND li.oid IS NULL", [currentCustomerId], (err, rows, fields) => {
+    if(err){
+      next(err);
+      return;
     }
-  }
-
-  res.render('pages/cart', context);
+    context.cartItems = rows;
+    res.render('pages/cart', context);
+  });
 });
 
 app.get('/cart/:productId', (req,res,next) => {
@@ -231,88 +229,92 @@ app.get('/cart/:productId', (req,res,next) => {
   let createItem = true;
 
   // if lineitem already exists increase qty
-  let length = sampleData.lineitems.length;
-  
-  for (let i=0; i<length; i++) {
-    if (
-      sampleData.lineitems[i].pid === productId
-      && sampleData.lineitems[i].cid === currentCustomerId
-      && sampleData.lineitems[i].oid == null
-    ) {
-      sampleData.lineitems[i].qty += 1;
+  pool.query("SELECT id FROM lineItems WHERE lineItems.pid = ? AND lineItems.cid = ? AND lineItems.oid IS NULL", [productId, currentCustomerId], (err, rows, fields) => {
+    if(err){
+        next(err);
+        return;
+    }
+    if (rows.length) {
       createItem = false;
-    }
-  }
-
-
-  // todo: create lineitem in db with product id and account id
-  if (createItem) {
-    let lineitem = {
-      id: sampleData.lineitems.length,
-      pid: productId,
-      cid: currentCustomerId,
-      oid: null,
-      qty: 1,
+      // todo: update qty of exiting lineitem
+      console.log(rows);
     }
 
-    sampleData.lineitems.push(lineitem);
-  }
+    // create lineitem in db with product id and account id
+    if (createItem) {
 
-  res.redirect('/cart');
+      pool.query("INSERT INTO lineItems (`pid`, `cid`, `qty`) VALUES (?, ?, ?)", [productId, currentCustomerId, 1], (err, result) => {
+        if(err){
+          next(err);
+          return;
+        }
+        res.redirect('/cart');
+      });
+    }
+
+  });
 });
 
 app.get('/checkout', (req,res,next) => {
   // todo: get account id from storage
   // todo: create order & orderId
-  let date = new Date();
-  let order = {
-    id: sampleData.orders.length,
-    status: 'pending',
-    timestamp: date.getTime(),
-  }
-
-  sampleData.orders.push(order);
-
-  let length = sampleData.lineitems.length;
-  
-  // todo: update cart items with orderId
-  for (let i=0; i<length; i++) {
-    if (sampleData.lineitems[i].cid === currentCustomerId && sampleData.lineitems[i].oid == null) {
-      sampleData.lineitems[i].oid = order.id;
+  pool.query("INSERT INTO orders (`status`) VALUES (?)", ['pending'], (err, result) => {
+    if(err){
+      next(err);
+      return;
     }
-  }
+    let orderId = result.insertId;
 
-  res.redirect(`/orders/${order.id}`)
+    // Update cart items with orderId
+    pool.query("UPDATE lineItems SET oid = ? WHERE cid = ?", [orderId, currentCustomerId], (err, result) => {
+      if(err){
+        next(err);
+        return;
+      }
+      res.redirect(`/orders/${orderId}`);
+    });
+    
+  });
 });
 
 app.get('/orders', (req,res,next) => {
   let context = {};
-  // we will need to query the db for all line items with  an order id 
-  // and a customer id that matches the current user 
-  // then group by order id to get a list of orders belonging to the user.
 
-  context.orders = [];
+  pool.query("SELECT oid FROM lineItems li WHERE li.cid = ? AND li.oid IS NOT NULL GROUP BY li.oid ", [currentCustomerId], (err, rows, fields) => {
+    if(err){
+      next(err);
+      return;
+    }
+    console.log(rows);
+    context.orders = rows;
 
-  res.render('pages/orders', context);
+    res.render('pages/orders', context);
+  });
+
 })
 
 app.get('/orders/:orderId', (req,res,next) => {
   let context = {};
-  context.orderItems = [];
-  context.order = sampleData.orders[req.params.orderId];
+  let orderId = req.params.orderId
 
-  let length = sampleData.lineitems.length;
-
-  for (let i=0; i<length; i++) {
-    if (sampleData.lineitems[i].cid === currentCustomerId && sampleData.lineitems[i].oid === Number(req.params.orderId)) {
-      let index = sampleData.lineitems[i].pid;
-      let product = sampleData.products[index];
-      product.qty = sampleData.lineitems[i].qty;
-      context.orderItems.push(product);
+  pool.query("SELECT * FROM lineItems li INNER JOIN products p ON p.id = li.pid WHERE li.cid = ? AND li.oid = ?",[currentCustomerId, orderId], (err, items, fields) => {
+    if(err){
+      next(err);
+      return;
     }
-  }
+    context.orderItems = items;
+    pool.query("SELECT * FROM orders WHERE orders.id = ?", [orderId], (err, rows, fields) => {
+      if(err){
+        next(err);
+        return;
+      }
+      context.order = rows[0];
 
-  res.render('pages/order', context);
+      res.render('pages/order', context);
+    });
+    
+  });
+
 });
 
 app.get('/orders/:orderId/complete', (req,res,next) => {
