@@ -171,18 +171,15 @@ app.post('/products/:productId/reviews', (req,res,next) => {
 });
 
 app.post('/products/:productId/update', (req,res,next) => {
-  // todo: update product in db
-
-  // let product = sampleData.products[req.params.productId];
-
-  // product.price = req.body.price || product.price,
-  // product.name = req.body.name || product.name,
-  // product.description = req.body.description || product.description,
-  // product.brandName = req.body.brandName || product.brandName,
-  // product.modelName = req.body.modelName || product.modelname,
-  // product.inStock = req.body.inStock || product.inStock,
-
-  res.redirect('/products/' + req.params.productId);
+  // Update product in db
+  pool.query("UPDATE products SET sku = ?, name = ?, price = ?, description = ?, brandName = ?, modelName = ?, inStock = ? WHERE id = ?", 
+    [req.body.sku, req.body.name, req.body.price, req.body.description, req.body.brandName, req.body.modelName, req.body.inStock, req.params.productId], (err, result) => {
+        if(err){
+            next(err);
+            return;
+        }
+        res.redirect('/products/' + req.params.productId);
+  });  
 });
 
 app.get('/products/:productId/delete', (req,res,next) => {
@@ -229,7 +226,7 @@ app.get('/cart/:productId', (req,res,next) => {
   let createItem = true;
 
   // if lineitem already exists increase qty
-  pool.query("SELECT id FROM lineItems WHERE lineItems.pid = ? AND lineItems.cid = ? AND lineItems.oid IS NULL", [productId, currentCustomerId], (err, rows, fields) => {
+  pool.query("SELECT id, qty FROM lineItems WHERE lineItems.pid = ? AND lineItems.cid = ? AND lineItems.oid IS NULL", [productId, currentCustomerId], (err, rows, fields) => {
     if(err){
         next(err);
         return;
@@ -237,6 +234,16 @@ app.get('/cart/:productId', (req,res,next) => {
     if (rows.length) {
       createItem = false;
       // todo: update qty of exiting lineitem
+
+      let qty = 1 + rows[0].qty;
+
+      pool.query("UPDATE lineItems SET qty = ? WHERE pid = ? AND cid = ? AND oid IS NULL", [qty, productId, currentCustomerId], (err, result) => {
+        if(err){
+          next(err);
+          return;
+        }
+        res.redirect('/cart');
+      });
       console.log(rows);
     }
 
@@ -266,7 +273,7 @@ app.get('/checkout', (req,res,next) => {
     let orderId = result.insertId;
 
     // Update cart items with orderId
-    pool.query("UPDATE lineItems SET oid = ? WHERE cid = ?", [orderId, currentCustomerId], (err, result) => {
+    pool.query("UPDATE lineItems SET oid = ? WHERE cid = ? AND oid IS NULL", [orderId, currentCustomerId], (err, result) => {
       if(err){
         next(err);
         return;
