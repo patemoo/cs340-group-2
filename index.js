@@ -328,7 +328,7 @@ app.get('/orders/:orderId', (req,res,next) => {
 app.get('/orders/:orderId/complete', (req,res,next) => {
   let orderId = Number(req.params.orderId);
 
-  sampleData.orders[orderId].status = 'complete';
+  // todo: complete order
 
   res.redirect(`/orders/${orderId}`);
 });
