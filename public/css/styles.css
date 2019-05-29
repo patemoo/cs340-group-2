@@ -135,6 +135,13 @@ form fieldset textarea {
     font-size: 14px;
     padding: 4px 8px;
 }
+form fieldset select {
+    display: block;
+    height: 32px;
+    margin: 4px 0 20px;
+    padding: 0 8px;
+    font-size: 14px;
+}
 form button, form a {
     margin-top: 16px;
 }

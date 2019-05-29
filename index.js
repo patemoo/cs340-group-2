@@ -81,7 +81,8 @@ app.use(bodyParser.urlencoded({ extended: true }));
 
 app.get('/', (req,res,next) => {
   let context = {};
-  res.render('home', context);
+  // res.render('home', context);
+  res.redirect('/products');
 });
 
 app.get('/products', (req,res,next) => {
@@ -337,86 +338,78 @@ app.get('/signin', (req,res,next) => {
   
   if (req.query.email) {
     let email = req.query.email;
-    let length = sampleData.customers.length;
     let customerId;
 
-    // todo: check db for account
-    for (let i=0; i < length; i++) {
-      if (sampleData.customers[i].email === email) {
-        customerId = sampleData.customers[i].id;
+    pool.query("SELECT id FROM customers WHERE customers.email = ?", [email], (err, rows) => {
+      if(err){
+        next(err);
+        return;
       }
-    }
+      customerId = rows[0].id;
 
-    if (sampleData.customers[customerId]) {
+      if (customerId) {
+        currentCustomerId = customerId;
+        res.redirect(`/account/${customerId}`);
+      } else {
+        res.redirect('/account/new');
+      }
 
-      currentCustomerId = customerId;
+    });
 
-      res.redirect(`/account/${customerId}`);
-
-    } else {
-      // todo: if account doesn't exist redirect to create new account
-      res.redirect('/account/new');
-    }  
   } else {
     res.render('pages/signin');
   }
-
 });
 
 app.get('/account/new', (req,res,next) => {
-  res.render('pages/account-new');
+  let context = {};
+  context.states = STATES;
+  res.render('pages/account-new', context);
 });
 
 app.post('/account/new', (req,res,next) => {
-  let customer = {
-    id: sampleData.customers.length,
-    email: req.body.email,
-    firstName: req.body.firstName,
-    lastName: req.body.lastName,
-    street1: req.body.street1,
-    street2: req.body.street2,
-    city: req.body.city,
-    state: req.body.state,
-    zip: req.body.zip,
-    birthdate: req.body.birthdate,
-  }
 
-  sampleData.customers.push(customer);
+  pool.query("INSERT INTO customers (`email`, `firstName`, `lastName`, `street1`, `street2`, `city`, `state`, `zip`, `birthdate` ) VALUES (?, ? , ? , ?, ?, ?, ?, ?, ?)", 
+    [req.body.email, req.body.firstName, req.body.lastName, req.body.street1, req.body.street2, req.body.city, req.body.state, req.body.zip, req.body.birthdate], (err, result) => {
+        if(err){
+            next(err);
+            return;
+        }
 
-  res.redirect(`/account/${customer.id}`);
+        let customerId = result.insertId;
+
+        res.redirect(`/account/${customerId}`);
+  });
 })
 
 app.get('/account/:customerId', (req,res,next) => {
   let params = req.params;
   let customerId = params.customerId;
   let context = {};
-  // todo: get customer info from id param
+  context.states = STATES;
 
-  // use sample data until connected to db
-  context.customer = sampleData.customers[customerId];
-
-  // set current customer:
-  currentCustomerId = Number(customerId);
-
-  res.render('pages/account', context);
+  // Get customer info from id param
+  pool.query("SELECT * FROM customers WHERE customers.id = ?", [customerId], (err, rows) => {
+    if(err){
+      next(err);
+      return;
+    }
+    context.customer = rows[0];
+    currentCustomerId = Number(customerId);
+    res.render('pages/account', context);
+  });
 });
 
 app.post('/account/:customerId/update', (req,res,next) => {
-  // todo: update customer in db
-
-  let customer = sampleData.customers[req.params.customerId];
-
-  customer.email = req.body.email || customer.email,
-  customer.firstName = req.body.firstName || customer.firstName,
-  customer.lastName = req.body.lastName || customer.lastName,
-  customer.street1 = req.body.street1 || customer.street1,
-  customer.street2 = req.body.street2 || customer.street2,
-  customer.city = req.body.city || customer.city,
-  customer.state = req.body.state || customer.state,
-  customer.zip = req.body.zip || customer.zip,
-  customer.birthdate = req.body.birthdate || customer.birthdate,
-
-  res.redirect('/account/' + req.params.customerId);
+  // Update customer in db
+  pool.query("UPDATE customers SET email = ?, firstName = ?, lastName = ?, street1 = ?, street2 = ?, city = ?, state = ?, zip = ?, birthdate = ? WHERE customers.id = ?", 
+    [req.body.email, req.body.firstName, req.body.lastName, req.body.street1, req.body.street2, req.body.city, req.body.state, req.body.zip, req.body.birthdate, req.params.customerId], (err, result) => {
+        if(err){
+            next(err);
+            return;
+        }
+        res.redirect('/account/' + req.params.customerId);
+  }); 
 });
 
 app.use(function(req,res){
