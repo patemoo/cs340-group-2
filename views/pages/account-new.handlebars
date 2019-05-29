@@ -11,7 +11,7 @@
             <input type="text" name="lastName">
         </label>
         <label>Birthday
-            <input type="text" name="birthday">
+            <input type="date" name="birthdate">
         </label>
 
         <label> Address line 1
@@ -24,7 +24,11 @@
             <input type="text" name="city">
         </label>
         <label> State
-            <input type="text" name="state">
+            <select name="state">
+                {{#each states}}
+                <option value="{{this}}">{{this}}</option>
+                {{/each}}
+            </select>
         </label>
         <label> Zipcode
             <input type="text" name="zip">

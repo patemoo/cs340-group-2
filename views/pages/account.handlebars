@@ -28,7 +28,7 @@
             <input type="text" name="lastName" value="{{customer.lastName}}">
         </label>
         <label>Birthday
-            <input type="text" name="birthday" value="{{customer.birthday}}">
+            <input type="date" name="birthdate" value="{{customer.birthdate}}">
         </label>
 
         <label> Address line 1
@@ -41,7 +41,14 @@
             <input type="text" name="city" value="{{customer.city}}">
         </label>
         <label> State
-            <input type="text" name="state" value="{{customer.state}}">
+            <select name="state">
+                {{#if customer.state}}
+                    <option value="{{customer.state}}" selected>{{customer.state}}</option>
+                {{/if}}
+                {{#each states}}
+                    <option value="{{this}}">{{this}}</option>
+                {{/each}}
+            </select>
         </label>
         <label> Zipcode
             <input type="text" name="zip" value="{{customer.zip}}">
