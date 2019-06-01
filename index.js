@@ -184,13 +184,13 @@ app.post('/products/:productId/update', (req,res,next) => {
 });
 
 app.get('/products/:productId/delete', (req,res,next) => {
-  // todo: delete product from db
-
-  // sampleData.products.splice(req.params.productId, 1);
-  // let length = sampleData.products.length;
-  // for (let i=0; i < length; i++) {
-  //   sampleData.products[i].id= i;
-  // }
+    let productId = Number(req.params.productId);
+    pool.query("DELETE FROM products where id = ?", [productId], (err, result) => {
+        if (err) {
+            next(err);
+            return;
+        }
+    })
   
   res.redirect('/products');
 });
