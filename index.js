@@ -91,7 +91,7 @@ app.get('/products', (req,res,next) => {
   if (req.query.search) {
     // If search query exists: select products from db
     // filtered by search query
-    pool.query('SELECT * FROM products WHERE products.name LIKE ?',[`%${req.query.search}%`], (err, rows, fields) => {
+      pool.query('SELECT * FROM products WHERE products.name LIKE ? or products.sku like ?', [`%${req.query.search}%`, `%${req.query.search}%`], (err, rows, fields) => {
       if(err){
           next(err);
           return;
@@ -185,7 +185,7 @@ app.post('/products/:productId/update', (req,res,next) => {
 
 app.get('/products/:productId/delete', (req,res,next) => {
     let productId = Number(req.params.productId);
-    pool.query("DELETE FROM products where id = ?", [productId], (err, result) => {
+    pool.query("DELETE p, li from products p inner join lineItems li on p.id = li.pid and li.oid is null where p.id = ?", [productId], (err, result) => {
         if (err) {
             next(err);
             return;
