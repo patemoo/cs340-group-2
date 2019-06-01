@@ -1,11 +1,13 @@
 var bodyParser = require('body-parser');
 var express = require('express');
 const mysql = require('mysql');
+const dotenv = require('dotenv');
+dotenv.config();
 
 const pool = mysql.createPool({
   host  : 'classmysql.engr.oregonstate.edu',
-  user  : 'cs340_moorepat',
-  password: '7567',
+  user  : process.env.DB_USER,
+  password: process.env.DB_PASSWORD,
   database: 'cs340_moorepat'
 });
 
@@ -245,7 +247,6 @@ app.get('/cart/:productId', (req,res,next) => {
         }
         res.redirect('/cart');
       });
-      console.log(rows);
     }
 
     // create lineitem in db with product id and account id
@@ -293,7 +294,6 @@ app.get('/orders', (req,res,next) => {
       next(err);
       return;
     }
-    console.log(rows);
     context.orders = rows;
 
     res.render('pages/orders', context);
