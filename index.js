@@ -153,7 +153,6 @@ app.get('/products/:productId', (req,res,next) => {
         next(err);
         return;
       }
-      console.log(reviews)
       context.reviews = reviews;
       res.render('pages/product', context);
     });
