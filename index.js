@@ -148,11 +148,12 @@ app.get('/products/:productId', (req,res,next) => {
     }
 
     // Query db to get reviews for the product
-    pool.query('SELECT * FROM reviews WHERE reviews.pid = ?', [params.productId], (err, reviews, fields) => {
+    pool.query('SELECT * FROM reviews r INNER JOIN customers c ON c.id = r.cid WHERE r.pid = ?', [params.productId], (err, reviews, fields) => {
       if(err){
         next(err);
         return;
       }
+      console.log(reviews)
       context.reviews = reviews;
       res.render('pages/product', context);
     });
