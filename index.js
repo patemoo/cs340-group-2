@@ -185,14 +185,20 @@ app.post('/products/:productId/update', (req,res,next) => {
 
 app.get('/products/:productId/delete', (req,res,next) => {
     let productId = Number(req.params.productId);
-    pool.query("DELETE p, li from products p inner join lineItems li on p.id = li.pid and li.oid is null where p.id = ?", [productId], (err, result) => {
+    pool.query("DELETE FROM products WHERE id = ?", [productId], (err, result) => {
         if (err) {
             next(err);
             return;
         }
     })
-  
-  res.redirect('/products');
+    
+    pool.query("DELETE FROM lineItems WHERE oid IS NULL AND pid = ?", [productId], (err, result) => {
+        if (err) {
+            next(err);
+            return;
+        }
+        res.redirect('/products');
+    })
 });
 
 app.get('/cart', (req,res,next) => {
