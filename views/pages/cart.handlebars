@@ -3,10 +3,14 @@
 <ul class="cart-list">
     {{#each cartItems}}
     <li>
-        <h2>{{this.name}}</h2>
-        <p>{{this.price}}</p>
-        <p>sku: {{this.sku}}</p>
-        <p>qty: {{this.qty}}</p>
+        <h2>{{this.name}}</h2> 
+        <p>SKU: {{this.sku}}</p>
+        <p>${{this.price}}</p>
+        <form method="POST" action="/cart/{{this.id}}/save">
+            <input type="number" value="{{this.qty}}" name="newQty"/> 
+            <button class="cart-action" type="submit">Save</button>
+        </form>
+        <a href="/cart/{{this.id}}/delete" class="cart-action">Delete</a>
     </li>
     {{/each}}
 </ul>
