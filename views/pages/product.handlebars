@@ -1,12 +1,12 @@
 <h1>{{product.name}}</h1>
 
-<ul>
-    <li>SKU:{{product.sku}}</li>
-    <li>Price: ${{product.price}}</li>
-    <li>Description: {{product.description}}</li>
-    <li>Brand: {{product.brandName}}</li>
-    <li>Model: {{product.modelName}}</li>
-    <li>QTY In Stock: {{product.inStock}}</li>
+<ul class="product-detail">
+    <li><span>SKU:</span> {{product.sku}}</li>
+    <li><span>Price:</span> ${{product.price}}</li>
+    <li><span>Description:</span><p>{{product.description}}</p></li>
+    <li><span>Brand:</span> {{product.brandName}}</li>
+    <li><span>Model:</span> {{product.modelName}}</li>
+    <li><span>QTY In Stock:</span> {{product.inStock}}</li>
 </ul>
 
 <a href="/cart/{{product.id}}">Add to cart</a>
@@ -84,3 +84,6 @@
         <p class="body">{{this.body}}</p>
     </div>
 {{/each}}
+{{#unless reviews}}
+    <p>no reviews.</p>
+{{/unless}}

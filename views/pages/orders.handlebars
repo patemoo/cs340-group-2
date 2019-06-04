@@ -5,3 +5,6 @@
     <li><a href="/orders/{{this.oid}}">order {{this.oid}}</a></li>
     {{/each}}
 </ul>
+{{#unless orders}}
+    <p>no orders.</p>
+{{/unless}}

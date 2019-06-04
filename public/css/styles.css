@@ -189,6 +189,26 @@ ul.products-list li a, ul.products-list li button {
     margin-top: 20px;
 }
 
+ul.product-detail {
+    margin-bottom: 40px;
+    padding: 0;
+    font-size: 14px;
+
+}
+ul.product-detail li {
+    display: flex;
+    list-style: none;
+    margin-bottom: 12px;
+}
+ul.product-detail li span {
+    flex: 0 0 100px;
+    font-weight: 600;   
+}
+ul.product-detail li p {
+    flex: 1 1 auto;
+    margin: 0;
+}
+
 /* cart/order list styles */
 ul.cart-list, ul.order-list {
     padding: 0;

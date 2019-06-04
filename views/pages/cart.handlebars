@@ -15,5 +15,9 @@
     {{/each}}
 </ul>
 
+{{#unless cartItems}}
+    <p>You have no items in your cart.</p>
+{{else}}
 <a href="/checkout">Checkout</a>
 <a href="/products">Continue shopping</a>
+{{/unless}}
