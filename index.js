@@ -192,15 +192,14 @@ app.get('/products/:productId/delete', (req,res,next) => {
             next(err);
             return;
         }
-    })
-    
-    pool.query("DELETE FROM lineItems WHERE oid IS NULL AND pid = ?", [productId], (err, result) => {
-        if (err) {
-            next(err);
-            return;
-        }
-        res.redirect('/products');
-    })
+        pool.query("DELETE FROM lineItems WHERE oid IS NULL AND pid = ?", [productId], (err, result) => {
+            if (err) {
+                next(err);
+                return;
+            }
+            res.redirect('/products');
+        });
+    });
 });
 
 app.get('/cart', (req,res,next) => {
