@@ -1,12 +1,12 @@
 <h1>{{product.name}}</h1>
 
 <ul>
-    <li>{{product.sku}}</li>
-    <li>{{product.price}}</li>
-    <li>{{product.description}}</li>
-    <li>{{product.brandName}}</li>
-    <li>{{product.modelName}}</li>
-    <li>in stock: {{product.inStock}}</li>
+    <li>SKU:{{product.sku}}</li>
+    <li>Price: ${{product.price}}</li>
+    <li>Description: {{product.description}}</li>
+    <li>Brand: {{product.brandName}}</li>
+    <li>Model: {{product.modelName}}</li>
+    <li>QTY In Stock: {{product.inStock}}</li>
 </ul>
 
 <a href="/cart/{{product.id}}">Add to cart</a>
@@ -17,13 +17,20 @@
 <hr>
 
 <form method="POST" action="/products/{{product.id}}/reviews" id="review-editor" class="review-editor">
-    <h3>Leave a review:</h3>
+    <h2>Leave a review:</h2>
     <fieldset>
         <label>Title
             <input type="text" name="title">
         </label>
         <label>Rating
-            <input type="text" name="rating">
+            <div class="rating-wrapper" onclick="rating.onRateClick(event)">
+                <input type="radio" value="1" name="rating">
+                <input type="radio" value="2" name="rating">
+                <input type="radio" value="3" name="rating">
+                <input type="radio" value="4" name="rating">
+                <input type="radio" value="5" name="rating">
+                <span id="rating"></span>
+            </div>
         </label>
         <label>Comment
             <textarea name="comment" id="" cols="30" rows="10"></textarea>
@@ -35,7 +42,7 @@
 </form>
 
 <form method="POST" action="/products/{{product.id}}/update" id="product-editor" class="product-editor">
-    <h3>Edit product:</h3>
+    <h2>Edit product:</h2>
     <fieldset>
         <label>SKU
             <input type="text" name="sku" value="{{product.sku}}">
@@ -62,10 +69,18 @@
     <button type="submit">Submit</button>
 </form>
 
+<h2>Reviews</h2>
 {{#each reviews}}
     <div class="review">
-        <span>{{this.title}}</span>
-        <p>rating: <span>{{this.rating}}</span><p></p>
-        <p>{{this.body}}</p>
+        <p class="name"><span class="face"></span><span class="text">{{this.firstName}} {{this.lastName}}</span></p>
+        <h3 class="title">{{this.title}}</h3>
+        <div class="rating-result value-{{this.rating}}">
+            <span></span>
+            <span></span>
+            <span></span>
+            <span></span>
+            <span></span>
+        </div>
+        <p class="body">{{this.body}}</p>
     </div>
 {{/each}}

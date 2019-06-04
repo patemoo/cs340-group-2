@@ -30,28 +30,29 @@ app.get('/', (req,res,next) => {
 });
 
 app.get('/products', (req,res,next) => {
-    let context = {};
+  let context = {};
 
-    if (req.query.search) {
+  if (req.query.search) {
         // If search query exists: select products from db
         // filtered by search query
-        pool.query('SELECT * FROM products WHERE products.name LIKE ?',[`%${req.query.search}%`], (err, rows, fields) => {
-        if(err){
-            next(err);
-            return;
-        }
-        context.products = rows;
-        res.render('pages/products', context);
+        pool.query('SELECT * FROM products WHERE products.name LIKE ? or products.sku like ?', [`%${req.query.search}%`, `%${req.query.search}%`], (err, rows, fields) => {
+            if(err){
+                next(err);
+                return;
+            }
+            context.products = rows;
+            res.render('pages/products', context);
         });
     } else {
+
         // Select all products from db
         pool.query('SELECT * FROM products', (err, rows, fields) => {
-        if(err){
-            next(err);
-            return;
-        }
-        context.products = rows;
-        res.render('pages/products', context);
+            if(err){
+                next(err);
+                return;
+            }
+            context.products = rows;
+            res.render('pages/products', context);
         });
     }
 });
@@ -88,7 +89,7 @@ app.get('/products/:productId', (req,res,next) => {
         }
 
         // Query db to get reviews for the product
-        pool.query('SELECT * FROM reviews WHERE reviews.pid = ?', [params.productId], (err, reviews, fields) => {
+        pool.query('SELECT * FROM reviews r INNER JOIN customers c ON c.id = r.cid WHERE r.pid = ?', [params.productId], (err, reviews, fields) => {
         if(err){
             next(err);
             return;
@@ -125,15 +126,20 @@ app.post('/products/:productId/update', (req,res,next) => {
 });
 
 app.get('/products/:productId/delete', (req,res,next) => {
-  // todo: delete product from db
-
-  // sampleData.products.splice(req.params.productId, 1);
-  // let length = sampleData.products.length;
-  // for (let i=0; i < length; i++) {
-  //   sampleData.products[i].id= i;
-  // }
-  
-  res.redirect('/products');
+    let productId = Number(req.params.productId);
+    pool.query("DELETE FROM products WHERE id = ?", [productId], (err, result) => {
+        if (err) {
+            next(err);
+            return;
+        }
+        pool.query("DELETE FROM lineItems WHERE oid IS NULL AND pid = ?", [productId], (err, result) => {
+            if (err) {
+                next(err);
+                return;
+            }
+            res.redirect('/products');
+        });
+    });
 });
 
 app.get('/cart', (req,res,next) => {
@@ -154,6 +160,31 @@ app.get('/cart', (req,res,next) => {
         }
         context.cartItems = rows;
         res.render('pages/cart', context);
+    });
+});
+
+app.get('/cart/:productId/delete', (req, res, next) => {
+    let productId = Number(req.params.productId);
+
+    pool.query("DELETE FROM lineItems WHERE pid = ? and cid = ? and oid is null", [productId, currentCustomerId], (err, result) => {
+        if (err) {
+            next(err);
+            return;
+        }
+        res.redirect('/cart');
+    });
+});
+
+app.post('/cart/:productId/save', (req, res, next) => {
+    let productId = Number(req.params.productId);
+    let qty = Number(req.body.newQty);
+
+    pool.query("UPDATE lineItems SET qty = ? WHERE pid = ? AND cid = ? AND oid IS NULL", [qty, productId, currentCustomerId], (err, result) => {
+        if(err){
+          next(err);
+          return;
+        }
+        res.redirect('/cart');
     });
 });
 
@@ -249,16 +280,25 @@ app.get('/orders/:orderId', (req,res,next) => {
             return;
         }
         context.orderItems = items;
-        pool.query("SELECT * FROM orders WHERE orders.id = ?", [orderId], (err, rows, fields) => {
-        if(err){
-            next(err);
-            return;
-        }
-        context.order = rows[0];
 
-        res.render('pages/order', context);
+        let length = items.length;
+        let total = 0;
+        for (let i=0;i<length;i++) {
+            total += (items[i].qty * items[i].price);
+        }
+
+        context.total = total;
+
+        pool.query("SELECT * FROM orders WHERE orders.id = ?", [orderId], (err, rows, fields) => {
+            if(err){
+                next(err);
+                return;
+            }
+            context.order = rows[0];
+
+            res.render('pages/order', context);
         });
-        
+            
     });
 });
 

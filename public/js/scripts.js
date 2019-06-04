@@ -25,3 +25,10 @@ var customer = {
         editor.classList.toggle('showEditor');
     }
 }
+
+var rating = {
+    onRateClick: (event) => {
+        let value = event.target.parentNode.querySelector('#rating');
+        value.innerText = event.target.value;
+    }
+}

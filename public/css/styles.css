@@ -14,6 +14,14 @@ body {
     box-sizing: border-box;
 }
 
+h2 {
+    font-size: 1.25em;
+}
+
+h3 {
+    font-size: 1em;
+}
+
 .hidden {
     display: none;
 }
@@ -130,6 +138,15 @@ form fieldset input {
     padding: 0 8px;
     font-size: 14px;
 }
+form fieldset .rating-wrapper {
+
+}
+form fieldset .rating-wrapper input[type="radio"] {
+    display: inline-block;
+    width: auto;
+    height: 14px;
+    margin: 10px 10px 20px 0;
+}
 form fieldset textarea {
     width: 100%;
     font-size: 14px;
@@ -172,6 +189,58 @@ ul.products-list li a, ul.products-list li button {
     margin-top: 20px;
 }
 
+/* cart/order list styles */
+ul.cart-list, ul.order-list {
+    padding: 0;
+    margin-bottom: 40px;
+}
+ul.cart-list li, ul.order-list li {
+    list-style: none;
+    display: flex;
+    flex-direction: row;
+    padding: 8px 0;
+    border-bottom: 1px solid #ccc;
+}
+ul.cart-list li h2, ul.cart-list li p, ul.order-list li h2, ul.order-list li p {
+    margin: 0;
+}
+ul.cart-list li h2, ul.order-list li h2 {
+    flex: 3 1 auto;
+}
+ul.cart-list li p{
+    flex: 1 1 100px;
+    line-height: 32px;
+    margin-left: 8px;
+}
+ul.order-list li p {
+    flex: 0 0 20%;
+    line-height: 32px;
+    text-align: right;
+}
+ul.order-list li p.total {
+    flex: 1 1 auto;
+}
+ul.cart-list li form {
+    margin: 0;
+}
+ul.cart-list li input {
+    flex: 0 0 auto;
+    box-sizing: border-box;
+    display: inline-block;
+    width: 60px;
+    height: 32px;
+    margin: 0;
+    padding: 4px 8px;
+    line-height: 24px;
+    border: none;
+}
+ul.cart-list li .cart-action {
+    flex: 0 0 auto;
+    width: auto;
+    min-width: 0;
+    margin: 0 0 0 8px;
+}
+
 /* editor styles */
 .review-editor, .product-editor, .customer-editor {
     display: none;
@@ -179,5 +248,62 @@ ul.products-list li a, ul.products-list li button {
 .review-editor.showEditor, .product-editor.showEditor, .customer-editor.showEditor {
     display: block;
 }
+
+/* review styles*/
+
+.review {
+    margin-bottom: 20px;
+    padding: 8px 0;
+    border-bottom: 1px solid #ccc;
+}
+.review .name{
+    margin: 0;
+    font-size: 13px;
+}
+.review .name .face {
+    display: inline-block;
+    width: 16px;
+    height: 16px;
+    margin-right: 8px; 
+    background-color: #ccc; 
+    border-radius: 50%;
+}
+.review .name .text {
+    line-height: 16px;
+    vertical-align: top;
+}
+.review .title {
+    margin: 0;
+}
+.review .rating-result {
+    box-sizing: border-box;
+    height: 24px;
+    padding: 8px 0;
+}
+.review .rating-result span {
+    display: inline-block;
+    width: 8px;
+    height: 8px;
+    margin-right: 4px;
+    background-color: #333;
+    border-radius: 50%;
+    vertical-align: top;
+}
+.review .rating-result.value-4 span:nth-child(4) ~ span {
+    background-color: #ccc;
+}
+.review .rating-result.value-3 span:nth-child(3) ~ span {
+    background-color: #ccc;
+}
+.review .rating-result.value-2 span:nth-child(2) ~ span {
+    background-color: #ccc;
+}
+.review .rating-result.value-1 span:nth-child(1) ~ span {
+    background-color: #ccc;
+}
+.review .body {
+    margin-top: 8px;
+}
+
 
 
