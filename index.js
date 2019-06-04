@@ -223,6 +223,31 @@ app.get('/cart', (req,res,next) => {
   });
 });
 
+app.get('/cart/:productId/delete', (req, res, next) => {
+    let productId = Number(req.params.productId);
+
+    pool.query("DELETE FROM lineItems WHERE pid = ? and cid = ? and oid is null", [productId, currentCustomerId], (err, result) => {
+        if (err) {
+            next(err);
+            return;
+        }
+        res.redirect('/cart');
+    });
+});
+
+app.post('/cart/:productId/save', (req, res, next) => {
+    let productId = Number(req.params.productId);
+    let qty = Number(req.body.newQty);
+
+    pool.query("UPDATE lineItems SET qty = ? WHERE pid = ? AND cid = ? AND oid IS NULL", [qty, productId, currentCustomerId], (err, result) => {
+        if(err){
+          next(err);
+          return;
+        }
+        res.redirect('/cart');
+    });
+});
+
 app.get('/cart/:productId', (req,res,next) => {
   // if customer not set, redirect to sign-in
   if (currentCustomerId == null) {
@@ -316,6 +341,15 @@ app.get('/orders/:orderId', (req,res,next) => {
       return;
     }
     context.orderItems = items;
+
+    let length = items.length;
+    let total = 0;
+    for (let i=0;i<length;i++) {
+        total += (items[i].qty * items[i].price);
+    }
+
+    context.total = total;
+
     pool.query("SELECT * FROM orders WHERE orders.id = ?", [orderId], (err, rows, fields) => {
       if(err){
         next(err);
