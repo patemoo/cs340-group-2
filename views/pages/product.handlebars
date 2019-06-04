@@ -1,12 +1,12 @@
 <h1>{{product.name}}</h1>
 
 <ul>
-    <li>{{product.sku}}</li>
-    <li>{{product.price}}</li>
-    <li>{{product.description}}</li>
-    <li>{{product.brandName}}</li>
-    <li>{{product.modelName}}</li>
-    <li>in stock: {{product.inStock}}</li>
+    <li>SKU:{{product.sku}}</li>
+    <li>Price: ${{product.price}}</li>
+    <li>Description: {{product.description}}</li>
+    <li>Brand: {{product.brandName}}</li>
+    <li>Model: {{product.modelName}}</li>
+    <li>QTY In Stock: {{product.inStock}}</li>
 </ul>
 
 <a href="/cart/{{product.id}}">Add to cart</a>

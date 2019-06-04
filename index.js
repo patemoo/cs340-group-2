@@ -93,7 +93,7 @@ app.get('/products', (req,res,next) => {
   if (req.query.search) {
     // If search query exists: select products from db
     // filtered by search query
-    pool.query('SELECT * FROM products WHERE products.name LIKE ?',[`%${req.query.search}%`], (err, rows, fields) => {
+      pool.query('SELECT * FROM products WHERE products.name LIKE ? or products.sku like ?', [`%${req.query.search}%`, `%${req.query.search}%`], (err, rows, fields) => {
       if(err){
           next(err);
           return;
@@ -186,15 +186,20 @@ app.post('/products/:productId/update', (req,res,next) => {
 });
 
 app.get('/products/:productId/delete', (req,res,next) => {
-  // todo: delete product from db
-
-  // sampleData.products.splice(req.params.productId, 1);
-  // let length = sampleData.products.length;
-  // for (let i=0; i < length; i++) {
-  //   sampleData.products[i].id= i;
-  // }
-  
-  res.redirect('/products');
+    let productId = Number(req.params.productId);
+    pool.query("DELETE FROM products WHERE id = ?", [productId], (err, result) => {
+        if (err) {
+            next(err);
+            return;
+        }
+        pool.query("DELETE FROM lineItems WHERE oid IS NULL AND pid = ?", [productId], (err, result) => {
+            if (err) {
+                next(err);
+                return;
+            }
+            res.redirect('/products');
+        });
+    });
 });
 
 app.get('/cart', (req,res,next) => {
