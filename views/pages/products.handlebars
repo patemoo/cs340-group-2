@@ -2,7 +2,7 @@
 
 <form method="GET" action="/products">
     <fieldset>
-        <label>Search
+        <label>Search by Product name or SKU
             <input type="text" name="search">
         </label>
     </fieldset>
@@ -13,8 +13,8 @@
     {{#each products}}
     <li>
         <h2>{{this.name}}</h2>
-        <p>{{this.price}}</p>
-        <p>sku: {{this.sku}}</p>
+        <p>${{this.price}}</p>
+        <p>SKU: {{this.sku}}</p>
         <a href="/products/{{this.id}}">view</a>
     </li>
     {{/each}}
