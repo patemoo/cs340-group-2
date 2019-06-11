@@ -101,8 +101,13 @@ app.get('/products/:productId', (req,res,next) => {
 });
 
 app.post('/products/:productId/reviews', (req,res,next) => {
+    // if customer not set, redirect to sign-in
+    if (currentCustomerId == null) {
+        res.redirect('/signin');
+        return;
+    }
+
     // Add new review to db
-    // todo: add correct customer id.
     pool.query("INSERT INTO reviews (`pid`, `cid`, `rating`, `title`, `body`) VALUES (?, ? , ? , ?, ?)", 
         [req.params.productId, currentCustomerId, req.body.rating, req.body.title, req.body.comment], (err, result) => {
             if(err){
@@ -246,17 +251,23 @@ app.get('/checkout', (req,res,next) => {
 
         // Update cart items with orderId
         pool.query("UPDATE lineItems SET oid = ? WHERE cid = ? AND oid IS NULL", [orderId, currentCustomerId], (err, result) => {
-        if(err){
-            next(err);
-            return;
-        }
-        res.redirect(`/orders/${orderId}`);
+            if(err){
+                next(err);
+                return;
+            }
+            res.redirect(`/orders/${orderId}`);
         });
         
     });
 });
 
 app.get('/orders', (req,res,next) => {
+    // if customer not set, redirect to sign-in
+    if (currentCustomerId == null) {
+        res.redirect('/signin');
+        return;
+    }
+
     let context = {};
 
     pool.query("SELECT oid FROM lineItems li WHERE li.cid = ? AND li.oid IS NOT NULL GROUP BY li.oid ", [currentCustomerId], (err, rows, fields) => {
@@ -295,6 +306,7 @@ app.get('/orders/:orderId', (req,res,next) => {
                 return;
             }
             context.order = rows[0];
+            context.showPlaceOreder = context.order.status == "pending"
 
             res.render('pages/order', context);
         });
@@ -306,8 +318,26 @@ app.get('/orders/:orderId/complete', (req,res,next) => {
     let orderId = Number(req.params.orderId);
 
     // todo: complete order
+    pool.query("UPDATE orders SET status = ? WHERE id = ?", ['shipped', orderId], (err, result) => {
+        if(err){
+            next(err);
+            return;
+        }
+        res.redirect(`/orders/${orderId}`);
+    });
+});
 
-    res.redirect(`/orders/${orderId}`);
+app.get('/orders/:orderId/cancel', (req,res,next) => {
+    let orderId = Number(req.params.orderId);
+
+    // todo: complete order
+    pool.query("UPDATE orders SET status = ? WHERE id = ?", ['canceled', orderId], (err, result) => {
+        if(err){
+            next(err);
+            return;
+        }
+        res.redirect(`/orders/${orderId}`);
+    });
 });
 
 
@@ -321,7 +351,7 @@ app.get('/signin', (req,res,next) => {
             next(err);
             return;
         }
-        customerId = rows[0].id;
+        customerId = rows.length && rows[0].id;
 
         if (customerId) {
             currentCustomerId = customerId;

@@ -15,4 +15,10 @@
     </li>
 </ul>
 
-<a href="/orders/{{order.id}}/complete">Place order</a>
+{{#if showPlaceOreder}}
+    <a href="/orders/{{order.id}}/complete">Place order</a>
+    <a href="/orders/{{order.id}}/cancel">Cancel order</a>
+{{/if}}
+
+
+
