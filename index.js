@@ -132,6 +132,7 @@ app.post('/products/:productId/update', (req,res,next) => {
 //Deletes items from the DB
 app.get('/products/:productId/delete', (req, res, next) => {
     let productId = Number(req.params.productId);
+    let isEmpty;
 
     //Checks to see if the item is used in completed orders
     pool.query("SELECT products.id FROM products INNER JOIN lineItems ON products.id=lineItems.pid WHERE products.id = ? and lineItems.oid IS NOT NULL", [productId], (err, rows) => {
