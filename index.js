@@ -31,7 +31,6 @@ app.get('/', (req,res,next) => {
 
 app.get('/products', (req,res,next) => {
   let context = {};
-
   if (req.query.search) {
         // If search query exists: select products from db
         // filtered by search query
@@ -130,8 +129,10 @@ app.post('/products/:productId/update', (req,res,next) => {
     });  
 });
 
-app.get('/products/:productId/delete', (req,res,next) => {
+//Deletes items from the DB
+app.get('/products/:productId/delete', (req, res, next) => {
     let productId = Number(req.params.productId);
+
     pool.query("DELETE FROM products WHERE id = ?", [productId], (err, result) => {
         if (err) {
             next(err);

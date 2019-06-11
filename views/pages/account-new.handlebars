@@ -2,26 +2,26 @@
 <form method="POST" action="/account/new">
     <fieldset>
         <label>Email
-            <input type="text" name="email">
+            <input type="email" name="email">
         </label>
         <label>First name
-            <input type="text" name="firstName">
+            <input type="text" name="firstName" required="required">
         </label>
         <label>Last name
-            <input type="text" name="lastName">
+            <input type="text" name="lastName" required="required">
         </label>
         <label>Birthday
-            <input type="date" name="birthdate">
+            <input type="date" name="birthdate" required="required">
         </label>
 
         <label> Address line 1
-            <input type="text" name="street1">
+            <input type="text" name="street1" required="required">
         </label>
         <label> Address line 2
             <input type="text" name="street2">
         </label>
         <label> City
-            <input type="text" name="city">
+            <input type="text" name="city" required="required">
         </label>
         <label> State
             <select name="state">
@@ -31,9 +31,8 @@
             </select>
         </label>
         <label> Zipcode
-            <input type="text" name="zip">
+            <input type="number" name="zip" min="10000" max="99999" required="required">
         </label>
-        
         <button type="submit">Create</button>
     </fieldset>
 </form>

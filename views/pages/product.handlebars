@@ -24,7 +24,7 @@
         </label>
         <label>Rating
             <div class="rating-wrapper" onclick="rating.onRateClick(event)">
-                <input type="radio" value="1" name="rating">
+                <input type="radio" value="1" name="rating" required="required">
                 <input type="radio" value="2" name="rating">
                 <input type="radio" value="3" name="rating">
                 <input type="radio" value="4" name="rating">
@@ -45,25 +45,25 @@
     <h2>Edit product:</h2>
     <fieldset>
         <label>SKU
-            <input type="text" name="sku" value="{{product.sku}}">
+            <input type="number" name="sku" value="{{product.sku}}" required="required" min="10000000" max="99999999">
         </label>
         <label>Price
-            <input type="text" name="price" value="{{product.price}}">
+            <input type="number" name="price" value="{{product.price}}" required="required" step=".01" min="0">
         </label>
         <label>Name
-            <input type="text" name="name" value="{{product.name}}">
+            <input type="text" name="name" value="{{product.name}}" required="required">
         </label>
         <label>Description
-            <input type="text" name="description" value="{{product.description}}">
+            <input type="text" name="description" value="{{product.description}}" required="required">
         </label>
         <label>Brand
-            <input type="text" name="brandName" value="{{product.brandName}}">
+            <input type="text" name="brandName" value="{{product.brandName}}" required="required">
         </label>
         <label>Model
-            <input type="text" name="modelName" value="{{product.modelName}}">
+            <input type="text" name="modelName" value="{{product.modelName}}" required="required">
         </label>
         <label>Qty in stock
-            <input type="number" name="inStock" value="{{product.inStock}}">
+            <input type="number" name="inStock" value="{{product.inStock}}" required="required" min="0">
         </label>
     </fieldset>
     <button type="submit">Submit</button>

@@ -2,25 +2,25 @@
 <form method="POST" action="/products/new">
     <fieldset>
         <label>SKU
-            <input type="text" name="sku">
+            <input type="number" name="sku" required="required" min="10000000" max="99999999">
         </label>
         <label>Price
-            <input type="text" name="price">
+            <input type="number" name="price" step=".01" min="0" required="required">
         </label>
         <label>Name
-            <input type="text" name="name">
+            <input type="text" name="name" required="required">
         </label>
         <label>Description
-            <input type="text" name="description">
+            <input type="text" name="description" required="required">
         </label>
         <label>Brand
-            <input type="text" name="brandName">
+            <input type="text" name="brandName" required="required">
         </label>
         <label>Model
-            <input type="text" name="modelName">
+            <input type="text" name="modelName" required="required">
         </label>
         <label>Qty in stock
-            <input type="number" name="inStock">
+            <input type="number" name="inStock" required="required" min="0">
         </label>
     </fieldset>
     <button type="submit">Add</button>
