@@ -31,7 +31,6 @@ app.get('/', (req,res,next) => {
 
 app.get('/products', (req,res,next) => {
   let context = {};
-
   if (req.query.search) {
         // If search query exists: select products from db
         // filtered by search query
@@ -102,15 +101,22 @@ app.get('/products/:productId', (req,res,next) => {
 
 app.post('/products/:productId/reviews', (req,res,next) => {
     // Add new review to db
-    // todo: add correct customer id.
-    pool.query("INSERT INTO reviews (`pid`, `cid`, `rating`, `title`, `body`) VALUES (?, ? , ? , ?, ?)", 
-        [req.params.productId, currentCustomerId, req.body.rating, req.body.title, req.body.comment], (err, result) => {
-            if(err){
-                next(err);
-                return;
-            }
-            res.redirect('/products/' + req.params.productId);
-    });
+    //If the customer is not signed in, redirect them to the signin page
+    if (currentCustomerId == null) {
+        res.redirect('/signin');
+    }
+
+    //Else add the review to the database.
+    else {
+        pool.query("INSERT INTO reviews (`pid`, `cid`, `rating`, `title`, `body`) VALUES (?, ? , ? , ?, ?)",
+            [req.params.productId, currentCustomerId, req.body.rating, req.body.title, req.body.comment], (err, result) => {
+                if (err) {
+                    next(err);
+                    return;
+                }
+                res.redirect('/products/' + req.params.productId)
+            });
+    }
 });
 
 app.post('/products/:productId/update', (req,res,next) => {
@@ -125,8 +131,10 @@ app.post('/products/:productId/update', (req,res,next) => {
     });  
 });
 
-app.get('/products/:productId/delete', (req,res,next) => {
+//Deletes items from the DB
+app.get('/products/:productId/delete', (req, res, next) => {
     let productId = Number(req.params.productId);
+
     pool.query("DELETE FROM products WHERE id = ?", [productId], (err, result) => {
         if (err) {
             next(err);

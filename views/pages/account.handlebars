@@ -19,26 +19,26 @@
     <h3>Edit customer:</h3>
     <fieldset>
         <label>Email
-            <input type="text" name="email" value="{{customer.email}}">
+            <input type="email" name="email" value="{{customer.email}}" required="required">
         </label>
         <label>First name
-            <input type="text" name="firstName" value="{{customer.firstName}}">
+            <input type="text" name="firstName" value="{{customer.firstName}}" required="required">
         </label>
         <label>Last name
-            <input type="text" name="lastName" value="{{customer.lastName}}">
+            <input type="text" name="lastName" value="{{customer.lastName}}"required="required">
         </label>
         <label>Birthday
             <input type="date" name="birthdate" value="{{customer.birthdate}}">
         </label>
 
         <label> Address line 1
-            <input type="text" name="street1" value="{{customer.street1}}">
+            <input type="text" name="street1" value="{{customer.street1}}" required="required">
         </label>
         <label> Address line 2
             <input type="text" name="street2" value="{{customer.street2}}">
         </label>
         <label> City
-            <input type="text" name="city" value="{{customer.city}}">
+            <input type="text" name="city" value="{{customer.city}}" required="required">
         </label>
         <label> State
             <select name="state">
@@ -51,7 +51,7 @@
             </select>
         </label>
         <label> Zipcode
-            <input type="text" name="zip" value="{{customer.zip}}">
+            <input type="text" name="zip" value="{{customer.zip}}" required="required" min="10000" max="99999">
         </label>
         
         <button type="submit">Submit</button>
