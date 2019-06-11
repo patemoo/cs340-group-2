@@ -133,18 +133,35 @@ app.post('/products/:productId/update', (req,res,next) => {
 app.get('/products/:productId/delete', (req, res, next) => {
     let productId = Number(req.params.productId);
 
-    pool.query("DELETE FROM products WHERE id = ?", [productId], (err, result) => {
+    //Checks to see if the item is used in completed orders
+    pool.query("SELECT products.id FROM products INNER JOIN lineItems ON products.id=lineItems.pid WHERE products.id = ? and lineItems.oid IS NOT NULL", [productId], (err, rows) => {
         if (err) {
             next(err);
             return;
         }
-        pool.query("DELETE FROM lineItems WHERE oid IS NULL AND pid = ?", [productId], (err, result) => {
-            if (err) {
-                next(err);
-                return;
-            }
-            res.redirect('/products');
-        });
+        hasOrders = rows[0];
+        //If it is used in pending/completed orders, item will not be removed.
+        if (hasOrders) {
+            console.log("Cannot delete. Item is already in an order and cannot be deleted");
+            res.redirect('/products/');
+        }
+        //Else remove the item from products and lineItems.
+        else {
+            pool.query("DELETE FROM products WHERE id = ?", [productId], (err, result) => {
+                if (err) {
+                    next(err);
+                    return;
+                }
+                pool.query("DELETE FROM lineItems WHERE oid IS NULL AND pid = ?", [productId], (err, result) => {
+                    if (err) {
+                        next(err);
+                        return;
+                    }
+                    res.redirect('/products');
+                    console.log("Item deleted succesfully.");
+                });
+            });
+        };
     });
 });
 
