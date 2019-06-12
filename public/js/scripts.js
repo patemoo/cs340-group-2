@@ -35,7 +35,7 @@ var rating = {
 
 window.onload = () => {
     if (document.location.hash && document.location.hash === '#alert') {
-        alert('Cannot delete items include in orders.');
+        alert('Cannot delete items included in orders.');
         history.replaceState(null, null, ' ');
     }
 }
