@@ -32,3 +32,10 @@ var rating = {
         value.innerText = event.target.value;
     }
 }
+
+window.onload = () => {
+    if (document.location.hash && document.location.hash === '#alert') {
+        alert('Cannot delete items include in orders.');
+        history.replaceState(null, null, ' ');
+    }
+}
